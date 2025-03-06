@@ -1,148 +1,179 @@
-var SteamCommunity = require('steamcommunity');
-const SteamTotp = require('steam-totp');
-const path = require('path');
-var fs = require('fs');
-var async = require('async');
+const fs = require("fs");
+const SteamUser = require("steam-user");
+const SteamTotp = require("steam-totp");
+const TradeOfferManager = require("steam-tradeoffer-manager");
+const SteamCommunity = require("steamcommunity");
 
-var community = new SteamCommunity;
+// Load config.json
+const config = JSON.parse(fs.readFileSync("config.json", "utf8"));
 
-var text = fs.readFileSync('./accs.txt').toString('utf-8');
-var bot = text.split("\n");
+// Initialize Steam clients
+const client1 = new SteamUser();
+const client2 = new SteamUser();
+const community1 = new SteamCommunity();
+const community2 = new SteamCommunity();
+const manager1 = new TradeOfferManager({
+    steam: client1,
+    community: community1,
+    language: "en",
+});
+const manager2 = new TradeOfferManager({
+    steam: client2,
+    community: community2,
+    language: "en",
+});
 
+// Log in after 20 seconds delay
+setTimeout(() => {
+    client1.logOn({
+        accountName: config.USERNAME1,
+        password: config.PASSWORD1,
+        twoFactorCode: SteamTotp.generateAuthCode(config.SHARED_SECRET1),
+    });
+}, 20000);
 
-(async() => {
-	for (let i = 0; i < bot.length; i++) {
-		const logOnOptions = {
-			accountName: bot[i].split(":")[0],
-			password: bot[i].split(":")[1],
-			twoFactorCode: SteamTotp.generateAuthCode(bot[i].split(":")[2]),
-		}; 
-		community.login({
-			"accountName": logOnOptions.accountName,
-			"password": logOnOptions.password,
-			"twoFactorCode": logOnOptions.twoFactorCode,
-		},
-		function (err, sessionID, cookies, steamguard, oAuthToken) {
-			if (err) { console.log('[] Unable to auth (Error: %s)'.red, logOnOptions.accountName, err); }
-			if (!err) {	
-				var options1 = {
-					formData: {	sessionid: sessionID, voteid: 72, appid: 1332010, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options2 = {
-					formData: {	sessionid: sessionID, voteid: 73, appid: 1849900, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options3 = {
-					formData: {	sessionid: sessionID, voteid: 74, appid: 570, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options4 = {
-					formData: {	sessionid: sessionID, voteid: 75, appid: 648800, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options5 = {
-					formData: {	sessionid: sessionID, voteid: 76, appid: 698670, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options6 = {
-					formData: {	sessionid: sessionID, voteid: 77, appid: 1332010, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options7 = {
-					formData: {	sessionid: sessionID, voteid: 78, appid: 493520, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options8 = {
-					formData: {	sessionid: sessionID, voteid: 79, appid: 1237320, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options9 = {
-					formData: {	sessionid: sessionID, voteid: 80, appid: 1703340, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options10 = {
-					formData: {	sessionid: sessionID, voteid: 81, appid: 920210, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				var options11 = {
-					formData: {	sessionid: sessionID, voteid: 82, appid: 1449850, developerid: 0  },
-					headers: { Cookie: cookies, Host: 'store.steampowered.com', Origin: 'https://store.steampowered.com' },
-					json: true
-				};
-				(async() => {
-					community.httpRequestPost('https://store.steampowered.com/salevote', options1,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 1 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options2,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 2 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options3,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 3 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options4,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 4 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options5,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 5 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options6,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 6 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options7,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 7 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options8,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 8 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options9,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 9 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options10,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 10 of 11', logOnOptions.accountName)
-					})
-					await new Promise(r => setTimeout(r, 3000));
-					community.httpRequestPost('https://store.steampowered.com/salevote', options11,	function (err, response, data) {
-						if (err) console.log('[%s] Something went wrong: %s', logOnOptions.accountName, err)
-						if (!err) console.log('[%s] Voted 11 of 11', logOnOptions.accountName)
-					})
-				})()
-			};
-		});
-		
-		if (i < bot.length) await new Promise(r => setTimeout(r, 50000))
-		else  console.log('[%s] End\n------------------', logOnOptions.accountName)
-	};
+client2.logOn({
+    accountName: config.USERNAME2,
+    password: config.PASSWORD2,
+    twoFactorCode: SteamTotp.generateAuthCode(config.SHARED_SECRET2),
+});
 
+// Account login events
+client1.on("loggedOn", () => {
+    console.log("✅ " + config.USERNAME1 + " logged in");
+    setTimeout(checkInventory, 10000);
+});
 
-})();
+client1.on("webSession", (sessionID, cookies) => {
+    manager1.setCookies(cookies);
+    community1.setCookies(cookies);
+    console.log("✅ Web session for " + config.USERNAME1 + " established.");
+});
 
+client2.on("loggedOn", () => {
+    console.log("✅ " + config.USERNAME2 + " logged in");
+});
+
+client2.on("webSession", (sessionID, cookies) => {
+    manager2.setCookies(cookies);
+    community2.setCookies(cookies);
+    console.log("✅ Web session for " + config.USERNAME2 + " established.");
+});
+
+let sender,
+    receiver,
+    senderManager,
+    receiverManager,
+    senderCommunity,
+    senderIdentitySecret;
+
+function checkInventory() {
+    manager1.getInventoryContents(753, 6, false, (err, inventory1) => {
+        if (err)
+            return console.log(
+                "❌ Error fetching inventory for Account1: " + err,
+            );
+
+        manager2.getInventoryContents(753, 6, false, (err, inventory2) => {
+            if (err)
+                return console.log(
+                    "❌ Error fetching inventory for Account2: " + err,
+                );
+
+            let tradeItems1 = inventory1.filter((item) =>
+                item.type.includes("Trading Card"),
+            );
+            let tradeItems2 = inventory2.filter((item) =>
+                item.type.includes("Trading Card"),
+            );
+
+            if (tradeItems1.length > 0) {
+                setSenderReceiver(
+                    config.STEAM_ID1,
+                    config.STEAM_ID2,
+                    manager1,
+                    manager2,
+                    community1,
+                    config.IDENTITY_SECRET1,
+                );
+            } else if (tradeItems2.length > 0) {
+                setSenderReceiver(
+                    config.STEAM_ID2,
+                    config.STEAM_ID1,
+                    manager2,
+                    manager1,
+                    community2,
+                    config.IDENTITY_SECRET2,
+                );
+            } else {
+                console.log("❌ No trading cards found on either account.");
+                return;
+            }
+
+            setTimeout(sendTrade, 2000);
+        });
+    });
+}
+
+function setSenderReceiver(s, r, sm, rm, sc, sis) {
+    sender = s;
+    receiver = r;
+    senderManager = sm;
+    receiverManager = rm;
+    senderCommunity = sc;
+    senderIdentitySecret = sis;
+}
+
+function sendTrade() {
+    senderManager.getInventoryContents(753, 6, false, (err, inventory) => {
+        if (err) return console.log("❌ Error fetching inventory: " + err);
+
+        let tradeItems = inventory.filter((item) =>
+            item.type.includes("Trading Card"),
+        );
+        if (tradeItems.length === 0)
+            return console.log("❌ No trading cards found.");
+
+        console.log(
+            "✅ Found " + tradeItems.length + " Steam cards. Sending trade...",
+        );
+        let offer = senderManager.createOffer(receiver);
+        offer.addMyItems(tradeItems);
+
+        offer.send((err, status) => {
+            if (err) console.log("❌ Error sending trade: " + err);
+            else {
+                console.log("✅ Trade sent! Status: " + status);
+                setTimeout(() => confirmTrade(offer.id), 10000);
+            }
+        });
+    });
+}
+
+function confirmTrade(tradeID) {
+    senderCommunity.acceptConfirmationForObject(
+        senderIdentitySecret,
+        tradeID,
+        (err) => {
+            if (err) return console.log("❌ Error confirming trade: " + err);
+            console.log("✅ Trade confirmed successfully!");
+            setTimeout(() => acceptTrade(tradeID), 3000);
+        },
+    );
+}
+
+function acceptTrade(tradeID) {
+    receiverManager.getOffers(1, (err, sent, received) => {
+        if (err)
+            return console.log("❌ Error checking incoming trades: " + err);
+
+        let offer = received.find((o) => o.id === tradeID);
+        if (!offer) return console.log("❌ No matching trade offer found.");
+
+        offer.accept((err) => {
+            if (err) return console.log("❌ Error accepting trade: " + err);
+            console.log("✅ Trade accepted successfully!");
+            setTimeout(checkInventory, 10000);
+        });
+    });
+}
